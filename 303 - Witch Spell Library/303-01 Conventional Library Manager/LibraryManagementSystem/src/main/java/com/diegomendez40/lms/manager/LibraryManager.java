@@ -3,13 +3,22 @@ package com.diegomendez40.lms.manager;
 import com.diegomendez40.lms.model.Book;
 import com.diegomendez40.lms.model.User;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 public class LibraryManager {
-    private HashMap<String, Book> books = new HashMap<>();
-    private HashMap<String, User> users = new HashMap<>();
+    private Map<String, Book> books = new HashMap<>();
+    private Map<String, User> users = new HashMap<>();
+    private Map<String, User> loanedBooks;
+
+    public LibraryManager() {
+        this.books = new HashMap<String, Book>();
+        this.users = new HashMap<String, User>();
+        this.loanedBooks = new HashMap<String, User>();
+    }
 
     public void addBook(Book book) {
         books.put(book.getISBN(), book);
@@ -30,7 +39,8 @@ public class LibraryManager {
         User user = users.get(userId);
         if (book != null && user != null && book.isAvailable()) {
             book.setAvailable(false);
-            user.getLoanedBooks().put(book.getISBN(), book);
+            user.getBorrowedBooks().put(book.getISBN(), book);
+            loanedBooks.put(ISBN, user);
             return true;
         }
         return false;
@@ -40,9 +50,13 @@ public class LibraryManager {
         Book book = books.get(ISBN);
         if (book != null && !book.isAvailable()) {
             book.setAvailable(true);
-            // Se asume que el usuario se actualiza adecuadamente
+            loanedBooks.get(ISBN).returnBook(ISBN);
             return true;
         }
         return false;
+    }
+
+    public boolean containsBook(String ISBN) {
+        return books.containsKey(ISBN);
     }
 }
